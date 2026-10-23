@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speak Coach</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>Speak Coach</h1>
+  <div class="settings">
+    <label>Accent <select id="accent"><option value="us">US</option><option value="gb">UK</option></select></label>
+    <label>Voice <select id="gender"><option value="female">Female</option><option value="male">Male</option></select></label>
+    <label>Level <select id="level"><option>B1</option><option selected>B2</option><option>C1</option><option>C2</option></select></label>
+    <button id="tab-practice" class="ghost">Practice</button>
+    <button id="tab-library" class="ghost">Real-speech library</button>
+    <button id="tab-history" class="ghost">History</button>
+  </div>
+</header>
+
+<main id="practice">
+  <section class="card">
+    <div class="row between">
+      <div class="seg" id="registers">
+        <button data-r="work" class="on">Work</button>
+        <button data-r="casual">Casual</button>
+        <button data-r="intimate">Intimate</button>
+      </div>
+      <div class="seg" id="modes">
+        <button data-m="read" class="on">Read aloud</button>
+        <button data-m="free">Free talk</button>
+      </div>
+    </div>
+    <details id="reg-notes"><summary>How this situation should sound</summary><ul></ul></details>
+
+    <div id="read-pane">
+      <div id="clip-banner" class="clip-banner" hidden></div>
+      <textarea id="target" rows="3" placeholder="Type or paste a line to practise, or let the coach suggest one…">Could we move the meeting to Thursday? I need a bit more time to finish the report.</textarea>
+      <div class="row wrap">
+        <button id="btn-ref" class="primary">▶ Hear reference</button>
+        <audio id="ref-audio" controls hidden></audio>
+        <span class="grow"></span>
+        <input id="topic" placeholder="topic (optional), e.g. job interview">
+        <button id="btn-suggest">Suggest lines</button>
+        <button id="btn-rewrite">This line in 3 situations</button>
+      </div>
+      <div id="suggestions"></div>
+    </div>
+
+    <div id="free-pane" hidden>
+      <div class="row wrap">
+        <button id="btn-task">New speaking task</button>
+        <input id="free-prompt" class="grow" placeholder="…or type your own topic / question to answer">
+      </div>
+      <div id="task-box"></div>
+    </div>
+
+    <div class="record-row">
+      <button id="btn-rec" class="rec">● Record</button>
+      <span id="rec-status">Press record, speak, then press stop.</span>
+    </div>
+  </section>
+
+  <section id="results" hidden>
+    <div class="tiles" id="tiles"></div>
+
+    <div class="card">
+      <div class="row between"><h2>What you said</h2><audio id="my-audio" controls></audio></div>
+      <p class="hint">Words are coloured by pronunciation. Click a word for the sound-by-sound breakdown.</p>
+      <div id="words" class="words"></div>
+      <div id="word-detail" class="detail" hidden></div>
+      <p id="asr-line" class="hint"></p>
+    </div>
+
+    <div class="card">
+      <h2>Intonation &amp; tone</h2>
+      <p class="hint">Pitch in semitones relative to your own average voice. <span class="you-key">you</span> <span class="ref-key">reference</span></p>
+      <canvas id="pitch" height="220"></canvas>
+      <div id="endings"></div>
+      <div id="emphasis"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card"><h2>Fluency &amp; rhythm</h2><div id="fluency"></div></div>
+      <div class="card"><h2>Fit for this situation</h2><div id="checks"></div></div>
+    </div>
+
+    <div class="card" id="sounds-card"><h2>Sounds to work on</h2><div id="sounds"></div></div>
+
+    <div class="card" id="real-examples" hidden>
+      <h2>Real people saying similar things</h2>
+      <div id="real-list"></div>
+    </div>
+
+    <div class="card" id="coach">
+      <h2>Coach feedback <small id="coach-model"></small></h2>
+      <div id="coach-body"><p class="hint">Waiting…</p></div>
+    </div>
+  </section>
+</main>
+
+<main id="library" hidden>
+  <section class="card">
+    <div class="row between"><h2>Real-speech library</h2><span id="lib-stats" class="hint"></span></div>
+    <div class="row wrap filters">
+      <input id="lf-q" class="grow" placeholder="Search words, e.g. sorry, deadline, miss you">
+      <select id="lf-register"><option value="">Any situation</option><option value="work">Work</option><option value="casual">Casual</option><option value="intimate">Intimate</option></select>
+      <select id="lf-source"><option value="">Any source</option></select>
+      <select id="lf-tone"><option value="">Any tone</option></select>
+      <select id="lf-act"><option value="">Any purpose</option></select>
+    </div>
+    <div class="row wrap filters">
+      <select id="lf-gender"><option value="">Any voice</option><option value="female">Female</option><option value="male">Male</option></select>
+      <select id="lf-accent"><option value="">Any accent</option></select>
+      <select id="lf-length"><option value="">Any length</option><option value="short">Short (&lt;3.5 s)</option><option value="medium">Medium</option><option value="long">Long (&gt;7 s)</option></select>
+      <select id="lf-pace"><option value="">Any pace</option><option value="slow">Slow</option><option value="normal">Normal</option><option value="fast">Fast</option></select>
+      <select id="lf-order"><option value="best">Most useful</option><option value="random">Random</option><option value="least_practiced">Least practised</option><option value="new">Newest</option></select>
+      <label class="hint"><input type="checkbox" id="lf-fav"> ★ only</label>
+      <span class="grow"></span>
+      <button id="lf-go" class="primary">Search</button>
+      <button id="lf-random">Surprise me</button>
+    </div>
+    <div id="lib-results"></div>
+    <div class="row"><button id="lf-more" hidden>Load more</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Add more real speech</h2>
+    <p class="hint">Every line is re-transcribed, checked for clean audio, measured, and labelled by situation, tone and purpose. Downloads are cached; you can stop any time.</p>
+    <div id="catalog"></div>
+    <h2 style="margin-top:16px">Your own movies, shows, podcasts</h2>
+    <p class="hint">A file path on this Mac (.mkv, .mp4, .mp3…; a matching .srt next to it or embedded English subtitles is used if present, otherwise Whisper transcribes), or a URL that yt-dlp supports. Only import what you have the right to use.</p>
+    <div class="row wrap">
+      <input id="imp-src" class="grow" placeholder="~/Movies/Before Sunrise (1995).mkv   or   https://…">
+      <input id="imp-title" placeholder="title (optional)">
+      <button id="imp-go">Import</button>
+    </div>
+    <div id="jobs"></div>
+  </section>
+</main>
+
+<main id="history" hidden>
+  <section class="card">
+    <div class="row between"><h2>History</h2><button id="back" class="ghost">← Practice</button></div>
+    <canvas id="trend" height="180"></canvas>
+    <table id="hist-table"><thead><tr><th>When</th><th>Situation</th><th>Text</th><th>Overall</th><th>Pron.</th><th>Fluency</th><th>Inton.</th><th>CEFR</th></tr></thead><tbody></tbody></table>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
