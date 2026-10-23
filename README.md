@@ -75,3 +75,6 @@ History (with a trend chart) is saved in `data/sessions/`.
 - Word-stress detection is experimental and only flags clear cases.
 - Library labels come from an 8B local model, so some will be off (a neutral line tagged "affectionate"). Usefulness ranking and filters still work well at scale. Set `LLM_MODEL` to a larger model for better labels.
 - Ingestion runs at roughly 40–50 clean clips a minute, and 35–60% of candidates pass the checks (fewer for films with heavy music).
+
+## Licence
+The code is MIT-licensed (see `LICENSE`). Models and datasets the app downloads keep their own licences.
